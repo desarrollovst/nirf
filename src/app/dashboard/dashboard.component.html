@@ -1,0 +1,76 @@
+<div class="welcome-container">
+    <nz-card class="welcome-card" [nzBordered]="false">
+        <div class="welcome-header">
+            <h1>¡Bienvenido(a)!</h1>
+            <p>
+                Bienvenido a la plataforma de <strong>Onboarding de NIRF</strong>.
+                Desde este portal podrás administrar tu información y registrar solicitudes
+                de crédito de forma rápida, sencilla y segura.
+            </p>
+        </div>
+        <nz-divider></nz-divider>
+        <h2 class="section-title">¿Qué puedes hacer?</h2>
+        <nz-row [nzGutter]="24">
+            <nz-col nzXs="24" nzSm="24" nzMd="12">
+                <nz-card class="option-card" nzHoverable>
+                    <span
+                        nz-icon
+                        nzType="user"
+                        nzTheme="outline"
+                        class="card-icon">
+                    </span>
+                    <h3>Actualizar información personal</h3>
+                    <p>
+                        Mantén actualizados tus datos personales,
+                        domicilio y medios de contacto para agilizar
+                        el proceso de evaluación de tus solicitudes.
+                    </p>
+                    <button
+                        nz-button
+                        nzType="primary"
+                        routerLink="/apps/cuenta">
+                        Actualizar información
+                    </button>
+                </nz-card>
+            </nz-col>
+            <nz-col nzXs="24" nzSm="24" nzMd="12">
+                <nz-card class="option-card" nzHoverable>
+                    <span
+                        nz-icon
+                        nzType="file-add"
+                        nzTheme="outline"
+                        class="card-icon">
+                    </span>
+                    <h3>Registrar solicitud de crédito</h3>
+                    <p>
+                        Inicia una nueva solicitud de crédito,
+                        captura la información requerida y adjunta la
+                        documentación necesaria.
+                    </p>
+                    <button
+                        nz-button
+                        nzType="primary"
+                        routerLink="/apps/solicitud">
+                        Nueva solicitud
+                    </button>
+                </nz-card>
+            </nz-col>
+        </nz-row>
+        <nz-divider></nz-divider>
+        <div class="security-box">
+            <span
+                nz-icon
+                nzType="safety-certificate"
+                nzTheme="fill">
+            </span>
+            <div>
+                <h3>Seguridad y privacidad</h3>
+                <p>
+                    Tu información es tratada de forma confidencial y
+                    protegida mediante mecanismos de seguridad que garantizan
+                    la integridad y confidencialidad de tus datos personales.
+                </p>
+            </div>
+        </div>
+    </nz-card>
+</div>

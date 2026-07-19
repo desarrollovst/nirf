@@ -1,0 +1,189 @@
+<div class="page-header">
+    <div class="row align-items-md-center">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-5">
+                    <nz-input-group [nzPrefix]="searchPrefix">
+                        <input type="text" nz-input placeholder="Búsqueda" [(ngModel)]="searchInput" (ngModelChange)="search()">
+                    </nz-input-group>
+                    <ng-template #searchPrefix>
+                        <i class="opacity-04" nz-icon nzType="search"></i>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-md-right m-v-10">
+                <button nz-button nzType="primary" (click)="mostrarNuevaSolicitud(solicitudContent)">
+                    <i nz-icon nzType="plus"></i>
+                    <span>Nueva Solicitud</span>
+                </button>  
+                <ng-template #solicitudContent>
+                    <div class="form-container">
+                        <div class="spinner-overlay" *ngIf="loadingModal">
+                            <nz-spin [nzSpinning]="true" nzSize="large" nzTip="Procesando..."></nz-spin>
+                        </div>
+                        <form nz-form [formGroup]="solicitudForm" nzLayout="vertical">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <nz-form-item>
+                                        <nz-form-label>Monto</nz-form-label>
+                                        <nz-form-control >
+                                            <input formControlName="monto" type="text" nz-input placeholder="Monto" 
+                                            (keypress)="soloDecimal($event)" (paste)="validarPegado($event)" 
+                                            (blur)="formatearMonto()">
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-6">
+                                    <nz-form-item>
+                                        <nz-form-label>Periodicidad</nz-form-label>
+                                        <nz-form-control >
+                                            <nz-select formControlName="periodicidad" class="w-100" nzPlaceHolder="Periodicidad">
+                                                <nz-option nzValue="Q" nzLabel="Quincenal"></nz-option>
+                                                <nz-option nzValue="M" nzLabel="Mensual"></nz-option>
+                                            </nz-select>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <nz-form-item>
+                                        <nz-form-label>Plazo</nz-form-label>
+                                        <nz-form-control >
+                                            <input formControlName="plazo" type="text" nz-input placeholder="Plazo"
+                                            (keypress)="soloEntero($event)" (paste)="validarPegadoEntero($event)">
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-6">
+                                    <nz-form-item>
+                                        <nz-form-label>Destino Recursos</nz-form-label>
+                                        <nz-form-control >
+                                            <nz-select formControlName="destino" class="w-100" nzPlaceHolder="Destino Recursos">
+                                                <nz-option nzValue="C" nzLabel="Compra"></nz-option>
+                                                <nz-option nzValue="I" nzLabel="Inversión"></nz-option>
+                                            </nz-select>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-12">
+                                    <nz-form-item>
+                                        <nz-form-label>Identificación Oficial</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="identificacion" readonly>
+                                            <nz-upload [nzBeforeUpload]="cargaIdentificacion" [nzShowUploadList]="false">
+                                                <button nz-button type="button">Seleccionar archivo</button>
+                                            </nz-upload>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-12">
+                                    <nz-form-item>
+                                        <nz-form-label>Recibo de Nómina</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="recibo" readonly>
+                                            <nz-upload [nzBeforeUpload]="cargaRecibo" [nzShowUploadList]="false">
+                                                <button nz-button type="button">Seleccionar archivo</button>
+                                            </nz-upload>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-12">
+                                    <nz-form-item>
+                                        <nz-form-label>Comprobante de Domicilio</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="comprobante" readonly>
+                                            <nz-upload [nzBeforeUpload]="cargaComprobante" [nzShowUploadList]="false">
+                                                <button nz-button type="button">Seleccionar archivo</button>
+                                            </nz-upload>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-12">
+                                    <nz-form-item>
+                                        <nz-form-label>Constancia de Situación Fiscal</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="constancia" readonly>
+                                            <nz-upload [nzBeforeUpload]="cargaConstancia" [nzShowUploadList]="false">
+                                                <button nz-button type="button">Seleccionar archivo</button>
+                                            </nz-upload>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-12">
+                                    <nz-form-item>
+                                        <nz-form-label>Estado de Cuenta Bancario</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="cuenta" readonly>
+                                            <nz-upload [nzBeforeUpload]="cargaCuenta" [nzShowUploadList]="false">
+                                                <button nz-button type="button">Seleccionar archivo</button>
+                                            </nz-upload>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <nz-card *ngIf="view == 'listView'">
+        <nz-table #listViewTable [nzLoading]="loading" [nzData]="solicitudList" [nzNoResult]="loading ? null : 'No hay datos'">
+            <thead>
+                <tr>
+                    <th>Fecha Solicitud</th>
+                    <th>Monto</th>
+                    <th>Periodicidad</th>
+                    <th>Plazo</th>
+                    <th>Destino Recursos</th>
+                    <th class="text-center">Estatus</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of listViewTable.data">
+                    <td>{{item.fecha}}</td>
+                    <td>{{ item.monto | currency }}</td>
+                    <td>{{item.periodicidad}}</td>
+                    <td>{{item.plazo}}</td>
+                    <td>{{item.destino}}</td>
+                    <td class="text-center">
+                        <nz-tag class="m-b-0" *ngIf="item.estatus_solicitud == 'Solicitado'" [nzColor]="'blue'">{{item.estatus_solicitud}}</nz-tag>
+                        <nz-tag class="m-b-0" *ngIf="item.estatus_solicitud == 'En Revisión'" [nzColor]="'gold'">{{item.estatus_solicitud}}</nz-tag>
+                        <nz-tag class="m-b-0" *ngIf="item.estatus_solicitud == 'Rechazado'" [nzColor]="'red'">{{item.estatus_solicitud}}</nz-tag>
+                        <nz-tag class="m-b-0" *ngIf="item.estatus_solicitud == 'Autorizado'" [nzColor]="'cyan'">{{item.estatus_solicitud}}</nz-tag>
+                    </td>
+                    <td class="text-right">
+                        <div>
+                            <a class="text-gray font-size-18" *ngIf="item.estatus_solicitud == 'Solicitado'" nz-dropdown nzPlacement="bottomRight" nzTrigger="click" [nzDropdownMenu]="solicitudListSetting2">
+                                <i nz-icon nzType="ellipsis" theme="outline"></i>
+                            </a>
+                            <nz-dropdown-menu #solicitudListSetting2="nzDropdownMenu">
+                                <ul nz-menu nzSelectable>
+                                    <li nz-menu-item *ngIf="item.estatus_solicitud == 'Solicitado'">
+                                        <a (click)="mostrarSolicitud(item.id_solicitud, solicitudContent)">
+                                            <i nz-icon nzType="edit" theme="outline"></i>
+                                            <span class="m-l-10">Editar</span>
+                                        </a>
+                                    </li>
+                                    <li nz-menu-divider></li>
+                                    <li nz-menu-item *ngIf="item.estatus_solicitud == 'Solicitado'">
+                                        <a (click)="eliminarSolicitud(item)">
+                                            <i nz-icon nzType="delete" theme="outline"></i>
+                                            <span class="m-l-10">Borrar</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nz-dropdown-menu>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>
+    </nz-card>
+</div>

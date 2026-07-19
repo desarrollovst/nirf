@@ -1,0 +1,306 @@
+<!--<div class="page-header has-tab">
+    <h2 class="font-weight-normal">Cuenta</h2>
+</div>-->
+<nz-spin [nzSpinning]="loading" nzTip="Cargando información...">
+<nz-tabset class="page-header-tab">
+    <nz-tab nzTitle="Usuario">
+        <div class="container">
+            <nz-card nzTitle="Información">
+                <form nz-form [formGroup]="avatarForm">
+                    <div class="media align-items-center">
+                        <nz-avatar [nzSize]="80" nzIcon="user" [nzSrc]="avatarUrl"></nz-avatar>
+                        <div class="m-l-20 m-r-20">
+                            <h5 class="m-b-5 font-size-18">Avatar</h5>
+                            <p class="opacity-07 font-size-13 m-b-0">
+                                Dimensiones Recomendadas: <br>
+                                120x120 Max tamaño: 1 MB
+                            </p>
+                        </div>
+                        <nz-upload 
+                            nzName="avatar"
+                            [nzCustomRequest]="customUpload"
+                            [nzShowUploadList]="false"
+                            nzAccept=".jpg,.jpeg,.png">
+                            <button nz-button nzType="primary">
+                                <span>Actualizar</span>
+                            </button>
+                        </nz-upload>
+                    </div>
+                </form>
+                <form nz-form [formGroup]="usuarioForm">
+                    <hr class="m-v-25">
+                    <div class="row">
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Email</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="email" nz-input placeholder="Email" type="email" readonly>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                    </div>
+                </form>
+            </nz-card>
+            <nz-card nzTitle="Actualización de Contraseña">
+                <form nz-form [formGroup]="passForm" (ngSubmit)="submitFormPwd()">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <nz-form-item>
+                                <nz-form-label nzFor="oldPassword">Anterior</nz-form-label>
+                                <nz-form-control nzErrorTip="Capture su contraseña anterior">
+                                    <input formControlName="oldPassword" nz-input type="password" placeholder="Anterior">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>    
+                        <div class="col-md-4">
+                             <nz-form-item>
+                                <nz-form-label nzFor="newPassword">Nueva Contraseña</nz-form-label>
+                                <nz-form-control nzErrorTip="Capture su nueva contraseña">
+                                    <input formControlName="newPassword" nz-input type="password" placeholder="Nueva Contraseña">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div> 
+                        <div class="col-md-4">
+                            <nz-form-item>
+                                <nz-form-label nzFor="confirmPassword">Confirmación</nz-form-label>
+                                <nz-form-control nzErrorTip="Confirme su nueva contraseña">
+                                    <input formControlName="confirmPassword" nz-input type="password" placeholder="Confirmación">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div> 
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <nz-form-item>
+                                <nz-form-control>
+                                    <button nz-button nzType="primary" [disabled]="!passForm.valid">Actualizar</button>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>    
+                    </div>
+                </form>
+            </nz-card>      
+        </div>
+    </nz-tab>
+    <nz-tab nzTitle="Datos Personales">
+        <div class="container">
+            <nz-card nzTitle="Información">
+                <form nz-form [formGroup]="datosGralsForm" (ngSubmit)="submitFormDatos()">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Primer Nombre</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="primerNombre" nz-input placeholder="Primer Nombre" value="">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Segundo Nombre</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="segundoNombre" nz-input placeholder="Segundo Nombre" value="">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Apellido Paterno</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="apellidoPaterno" nz-input placeholder="Apellido Paterno" value="">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Apellido Materno</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="apellidoMaterno" nz-input placeholder="Apellido Materno" value="">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Entidad de Nacimiento</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="entidadNacimiento" class="w-100" nzPlaceHolder="Entidad de Nacimiento">
+                                        <nz-option
+                                            *ngFor="let en of entidades"
+                                            [nzValue]="en.id"
+                                            [nzLabel]="en.nombre">
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Fecha de Nacimiento</nz-form-label>
+                                <nz-form-control>
+                                    <nz-date-picker formControlName="fechaNacimiento" class="w-100" nzFormat="dd/MM/yyyy" nzPlaceHolder="Fecha de Nacimiento"></nz-date-picker>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <nz-form-item>
+                                <nz-form-label>RFC</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="rfc" nz-input placeholder="RFC">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-4">
+                            <nz-form-item>
+                                <nz-form-label>CURP</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="curp" nz-input placeholder="CURP">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-4">
+                            <nz-form-item>
+                                <nz-form-label>Teléfono</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="telefono" nz-input placeholder="Teléfono">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <nz-form-item>
+                                <nz-form-control>
+                                    <button nz-button nzType="primary" [disabled]="!datosGralsForm.valid">Actualizar</button>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>    
+                    </div>
+                </form>
+            </nz-card>
+        </div>
+    </nz-tab>
+    <nz-tab nzTitle="Domicilio">
+        <div class="container">
+            <nz-card nzTitle="Información">
+                <form nz-form [formGroup]="domForm" (ngSubmit)="submitFormDir()">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Calle</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="calle" nz-input placeholder="Calle">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Número Exterior</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="numExt" nz-input placeholder="Número Exterior">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Número Interior</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="numInt" nz-input placeholder="Número Interior">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Código Postal</nz-form-label>
+                                <nz-form-control>
+                                    <input formControlName="codigoPostal" nz-input placeholder="Código Postal">
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Entidad Federativa</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="entidad" class="w-100" nzPlaceHolder="Entidad Federativa">
+                                        <nz-option
+                                            *ngFor="let e of entidades"
+                                            [nzValue]="e.id"
+                                            [nzLabel]="e.nombre">
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Municipio</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="municipio" class="w-100" nzPlaceHolder="Municipio">
+                                        <nz-option
+                                            *ngFor="let mu of municipios"
+                                            [nzValue]="mu.id"
+                                            [nzLabel]="mu.nombre">
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Localidad</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="localidad" class="w-100" nzPlaceHolder="Localidad">
+                                        <nz-option
+                                            *ngFor="let lo of localidades"
+                                            [nzValue]="lo.id"
+                                            [nzLabel]="lo.nombre">
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Colonia</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="colonia" class="w-100" nzPlaceHolder="Colonia">
+                                        <nz-option
+                                            *ngFor="let col of colonias"
+                                            [nzValue]="col.id"
+                                            [nzLabel]="col.nombre">
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <nz-form-item>
+                                <nz-form-control>
+                                    <button nz-button nzType="primary" [disabled]="!domForm.valid">Actualizar</button>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>    
+                    </div>
+                </form>
+            </nz-card>
+        </div>
+    </nz-tab>
+</nz-tabset>
+</nz-spin>

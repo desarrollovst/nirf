@@ -1,0 +1,31 @@
+.form-container {
+    position: relative;
+}
+
+.spinner-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(255,255,255,.5);
+}
+
+.spinner-overlay nz-spin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    text-align: center;
+}
+
+/*.spinner-overlay{
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(255,255,255,.65);
+    z-index: 1000;
+}*/

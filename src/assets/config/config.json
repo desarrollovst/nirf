@@ -1,0 +1,11 @@
+{
+  "apiAuthUrl": "https://nirf-app.com/api_admin_nirf/auth",
+  "urlBaseAvatar": "https://nirf-app.com/api_admin_nirf/img/avatar/",
+  "apiCatalogoUrl": "https://nirf-app.com/api_admin_nirf/catalogo", 
+  "apiUsuarioUrl": "https://nirf-app.com/api_admin_nirf/usuario",   
+  "apiCuentaUrl": "https://nirf-app.com/api_admin_nirf/cuenta",
+  "apiDomicilioUrl": "https://nirf-app.com/api_admin_nirf/domicilio",
+  "apiSolicitudUrl": "https://nirf-app.com/api_admin_nirf/solicitud",
+  "id_convenio": 1,
+  "convenio": "enlink"
+}

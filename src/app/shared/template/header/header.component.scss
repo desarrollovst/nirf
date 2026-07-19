@@ -1,0 +1,15 @@
+.nav-wrap{
+    position:relative;
+}
+
+.nav-logo{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
+}
+
+.nav-logo img{
+    height:36px;
+    width:auto;
+}
