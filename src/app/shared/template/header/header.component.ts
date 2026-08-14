@@ -19,7 +19,8 @@ export class HeaderComponent{
     nombre: string;
     imgAvatar: string;
     avatar: any;
-    subscription!: Subscription;
+    subscriptionAvatar!: Subscription;
+    subscriptionUsuario!: Subscription;
     
     constructor(private themeService: ThemeConstantService, private authService: AutenticacionService
                ,private usuarioService: UsuarioService
@@ -33,14 +34,21 @@ export class HeaderComponent{
 
         //suscripcion creada para actualizar el avatar cuando se modifique
         //la imagen en el mantenimiento de usuario
-        this.subscription = this.usuarioService.currentAvatar
+        this.subscriptionAvatar = this.usuarioService.currentAvatar
         .subscribe(avatar => {
             this.imgAvatar = avatar;
         });
 
-        this.email = usuario.email;
-        this.nombre = usuario.nombre;
+        //suscripcion creada para actualizar el nombre de usuario cuando se modifique
+        //en el mantenimiento de usuario
+        this.subscriptionUsuario = this.authService.currentUser
+        .subscribe(usuario => {
+            if(usuario)
+                this.nombre = usuario.nombre;
+        });
 
+        this.email = usuario.email;
+        
         if(usuario.avatar !== "")
             this.imgAvatar = `${this.usuarioService.obtenerRutaAvatar()}${usuario.avatar}`;
         else

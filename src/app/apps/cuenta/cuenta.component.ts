@@ -15,6 +15,7 @@ import { Municipio } from 'src/app/shared/interfaces/municipio.type';
 import { Localidad } from 'src/app/shared/interfaces/localidad.type';
 import { Colonia } from 'src/app/shared/interfaces/colonia.type';
 import { DateUtils } from '../../shared/utils/date.utils';
+import { CuentaUtils } from 'src/app/shared/utils/cuenta.utils';
 
 @Component({
     templateUrl: './cuenta.component.html'
@@ -210,15 +211,17 @@ export class CuentaComponent {
 
         formData.append('id_cuenta', this.datosGralsForm.get('id_cuenta')?.value ?? 0);
         formData.append('id_usuario', currentUser.id_usuario.toString());
+        const primer_nombre = this.datosGralsForm.get('primerNombre')?.value;
         formData.append('primer_nombre', this.datosGralsForm.get('primerNombre')?.value);
-        const segundoNombre = this.datosGralsForm.get('segundoNombre')?.value;
-        if (segundoNombre) {
-            formData.append('segundo_nombre', segundoNombre);
+        const segundo_nombre = this.datosGralsForm.get('segundoNombre')?.value;
+        if (segundo_nombre) {
+            formData.append('segundo_nombre', segundo_nombre);
         }
+        const apellido_paterno = this.datosGralsForm.get('apellidoPaterno')?.value;
         formData.append('apellido_paterno', this.datosGralsForm.get('apellidoPaterno')?.value);
-        const apellidoMaterno = this.datosGralsForm.get('apellidoMaterno')?.value;
-        if (apellidoMaterno) {
-            formData.append('apellido_materno', apellidoMaterno);
+        const apellido_materno = this.datosGralsForm.get('apellidoMaterno')?.value;
+        if (apellido_materno) {
+            formData.append('apellido_materno', apellido_materno);
         }
         formData.append('id_entidad_nacimiento', this.datosGralsForm.get('entidadNacimiento')?.value);
         formData.append('fecha_nacimiento', formatDate(this.datosGralsForm.get('fechaNacimiento')?.value,'yyyy-MM-dd','en-US'));
@@ -227,12 +230,19 @@ export class CuentaComponent {
         formData.append('telefono', this.datosGralsForm.get('telefono')?.value);
         formData.append('operacion', this.datosGralsForm.get('operacion')?.value);
 
+        currentUser.nombre = this.datosGralsForm.get('primerNombre')?.value;
+        currentUser.nombre_completo = CuentaUtils.formatearNombre(primer_nombre, segundo_nombre, apellido_paterno, apellido_materno, 2);
+
         this.cuentaService.guardarDatos(formData)
             .subscribe({
                 next: (res) => {
                     this.loading = false;
 
                     if(res.estatus_code === 200){
+                        if (currentUser) {
+                            this.authService.actualizarUsuario(currentUser);
+                        }
+
                         this.notificacion.success('Datos Personales', res.mensaje);
                         this.datosGralsForm.patchValue({
                             id_cuenta: res.resultado,

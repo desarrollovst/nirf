@@ -133,6 +133,7 @@ export class SolicitudComponent  {
         this.solicitudForm = this.fb.group({
             id_solicitud: [0],
             id_usuario: [currentUser.id_usuario],
+            nombre_completo: [currentUser.nombre_completo],
             monto: [ null, [ Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/) ] ],
             periodicidad: [ null, [ Validators.required ] ],
             plazo: [ null, [ Validators.required, Validators.pattern(/^[0-9]+$/) ] ],
@@ -323,6 +324,7 @@ export class SolicitudComponent  {
 
         formData.append('id_solicitud', this.solicitudForm.get('id_solicitud')?.value ?? 0);
         formData.append('id_usuario', this.solicitudForm.get('id_usuario')?.value);
+        formData.append('nombre_completo', this.solicitudForm.get('nombre_completo')?.value);
         formData.append('monto', this.solicitudForm.get('monto')?.value);
         formData.append('periodicidad', this.solicitudForm.get('periodicidad')?.value);
         formData.append('plazo', this.solicitudForm.get('plazo')?.value);

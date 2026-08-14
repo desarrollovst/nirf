@@ -16,8 +16,14 @@ export class AutenticacionService {
     constructor(private http: HttpClient, private router: Router, private configService: ConfigService) {
         const user = localStorage.getItem('currentUser');
 
-        this.currentUserSubject = new BehaviorSubject<Usuario | null>(user ? JSON.parse(localStorage.getItem('currentUser')): null);
+        this.currentUserSubject = new BehaviorSubject<Usuario | null>(user ? JSON.parse(user): null);
         this.currentUser = this.currentUserSubject.asObservable();
+    }
+
+    public actualizarUsuario(usuarioActualizado: Usuario): void {
+        localStorage.setItem('currentUser', JSON.stringify(usuarioActualizado));
+
+        this.currentUserSubject.next(usuarioActualizado);
     }
 
     public obtenerUsuarioActual(): Usuario | null {

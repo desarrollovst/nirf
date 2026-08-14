@@ -176,4 +176,17 @@ export class RegistroComponent {
             this.signUpForm.get('checkPassword')?.updateValueAndValidity();
         });
     }
+
+    normalizarEmail(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const valor = input.value.toLowerCase();
+
+        if (input.value !== valor) {
+            input.value = valor;
+        }
+
+        this.signUpForm.get('email')?.setValue(valor, {
+            emitEvent: false
+        });
+    }
 }    

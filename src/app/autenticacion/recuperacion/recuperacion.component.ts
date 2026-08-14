@@ -28,6 +28,27 @@ export class RecuperacionComponent {
                 updateOn: 'submit'
             })
         });
+
+        this.recuperacionForm.get('email')?.valueChanges.subscribe(value => {
+            if (value !== value?.toLowerCase()) {
+                this.recuperacionForm.get('email')?.setValue(value.toLowerCase(), {
+                    emitEvent: false
+                });
+            }
+        });
+    }
+
+    normalizarEmail(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const valor = input.value.toLowerCase();
+
+        if (input.value !== valor) {
+            input.value = valor;
+        }
+
+        this.recuperacionForm.get('email')?.setValue(valor, {
+            emitEvent: false
+        });
     }
 
     submitForm(){

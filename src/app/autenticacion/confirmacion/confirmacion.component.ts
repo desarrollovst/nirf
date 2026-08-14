@@ -53,6 +53,19 @@ export class ConfirmacionComponent {
         }
     }
 
+    normalizarEmail(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const valor = input.value.toLowerCase();
+
+        if (input.value !== valor) {
+            input.value = valor;
+        }
+
+        this.confirmacionForm.get('email')?.setValue(valor, {
+            emitEvent: false
+        });
+    }
+
     submit(){
         if(this.confirmacionForm.valid){
             this.loading = true;

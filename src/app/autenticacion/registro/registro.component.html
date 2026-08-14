@@ -16,7 +16,7 @@
                             <nz-form-item>
                                 <nz-form-label nzRequired nzFor="email">Email</nz-form-label>
                                 <nz-form-control [nzErrorTip]="mailErrorTpl">
-                                    <input type="text" nz-input formControlName="email" placeholder="Email" id="email">
+                                    <input type="text" nz-input formControlName="email" placeholder="Email" id="email" (input)="normalizarEmail($event)">
                                 </nz-form-control>
                                 <ng-template #mailErrorTpl>
                                     <ng-container *ngIf="submitted && signUpForm.get('email')?.hasError('required')">

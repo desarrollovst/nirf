@@ -4,7 +4,7 @@
         <nz-spin [nzSpinning]="loading" nzTip="Validando...">
         <div class="container" *ngIf="valido">
             <div class="row align-items-center">
-                <div class="col-md-5">
+                <div class="col-md-5 text-center text-md-left">
                     <div class="p-v-30">
                         <app-auth-header class="d-block d-md-none"></app-auth-header>
                         <h2 class="font-weight-semibold display-1 text-primary font-size-40">Confirmación exitosa</h2>
@@ -29,7 +29,7 @@
                                 <nz-form-label nzRequired nzFor="email">Email</nz-form-label>
                                 <nz-form-control [nzErrorTip]="mailErrorTpl">
                                     <nz-input-group [nzPrefix]="prefixUser">
-                                        <input type="text" nz-input formControlName="email" placeholder="Email">
+                                        <input type="text" nz-input formControlName="email" placeholder="Email" (input)="normalizarEmail($event)">
                                     </nz-input-group>
                                 </nz-form-control>
                                 <ng-template #mailErrorTpl>
