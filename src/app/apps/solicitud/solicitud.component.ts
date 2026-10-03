@@ -1,5 +1,7 @@
 import { Component, TemplateRef } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { AutenticacionService } from '../../shared/services/autenticacion.service';
+import { CatalogoService } from 'src/app/shared/services/catalogo.service';
 import { SolicitudService } from '../../shared/services/solicitud.service';
 import { CuentaService } from '../../shared/services/cuenta.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -8,6 +10,8 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { Solicitud } from '../../shared/interfaces/solicitud.type';
 import { TableService } from '../../shared/services/table.service';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Ocupacion } from 'src/app/shared/interfaces/ocupacion.type';
+import { TipoIdentificacion } from 'src/app/shared/interfaces/tipo-identificacion.type';
 
 @Component({
     templateUrl: './solicitud.component.html',
@@ -19,15 +23,18 @@ export class SolicitudComponent  {
     loading: boolean = false;
     loadingModal: boolean = false;
     nuevaSolicitud: boolean = false;
-    solicitudListRaw: Solicitud[];
-    solicitudList: Solicitud[];
-    searchInput: string;
-    solicitudForm: UntypedFormGroup;
+    solicitudListRaw: Solicitud[] = [];
+    solicitudList: Solicitud[] = [];
+    searchInput: string = "";
+    solicitudForm!: UntypedFormGroup;
     identificacionArchivo!: File;
+    curpArchivo!: File;
     reciboArchivo!: File;
     comprobanteArchivo!: File;
     constanciaArchivo!: File;
     cuentaArchivo!: File;
+    ocupaciones: Ocupacion[] = [];
+    tiposIdentificacion: TipoIdentificacion[] = [];
 
     beforeUpload = (file: File, nombreControl: string, archivoControl: string): boolean => {
         const maxSize = 3 * 1024 * 1024; // 3 MB
@@ -41,6 +48,7 @@ export class SolicitudComponent  {
             [nombreControl]: file.name,
             [archivoControl]: file
         });
+        
         return false;
     };
 
@@ -53,7 +61,10 @@ export class SolicitudComponent  {
     cargaCuenta = (file: File): boolean =>
         this.beforeUpload(file, 'cuenta', 'cuentaArchivo');
 
-    cargaIdentificacion = (file: File): boolean =>
+     cargaCURP = (file: File): boolean =>
+        this.beforeUpload(file, 'curp', 'curpArchivo');
+
+    cargaIdentificacion = (file: File): boolean => 
         this.beforeUpload(file, 'identificacion', 'identificacionArchivo');
 
     cargaRecibo = (file: File): boolean =>
@@ -64,7 +75,7 @@ export class SolicitudComponent  {
 
         this.loading = true;    
 
-        this.solicitudService.obtenerListaSolicitud(currentUser.id_usuario)
+        this.solicitudService.obtenerListaSolicitud(currentUser!.id_usuario)
         .subscribe({
             next: (data) => {
                 this.solicitudListRaw = data;
@@ -78,10 +89,11 @@ export class SolicitudComponent  {
         });
     }
 
-    constructor (private authService: AutenticacionService, private solicitudService: SolicitudService
-                ,private cuentaService: CuentaService, private tablesvc: TableService
-                ,private modalService: NzModalService, private message: NzMessageService
-                ,private notification: NzNotificationService, private fb: UntypedFormBuilder) {}
+    constructor (private authService: AutenticacionService, private catalogoService: CatalogoService 
+                ,private solicitudService: SolicitudService, private cuentaService: CuentaService
+                ,private tablesvc: TableService, private modalService: NzModalService
+                ,private message: NzMessageService, private notification: NzNotificationService
+                ,private fb: UntypedFormBuilder) {}
 
     eliminarSolicitud(item: any) {
         this.modalService.confirm({
@@ -91,8 +103,7 @@ export class SolicitudComponent  {
 
                 formData.append('id_solicitud', item.id_solicitud);
                 formData.append('id_usuario', item.id_usuario);
-                formData.append('monto', item.monto);
-                formData.append('plazo', item.plazo);
+                formData.append('nombre_completo', this.solicitudForm.get('nombre_completo')?.value);
                 formData.append('operacion', "3");    
 
                 this.solicitudService.guardarSolicitud(formData)
@@ -132,15 +143,20 @@ export class SolicitudComponent  {
 
         this.solicitudForm = this.fb.group({
             id_solicitud: [0],
-            id_usuario: [currentUser.id_usuario],
-            nombre_completo: [currentUser.nombre_completo],
+            id_usuario: [currentUser!.id_usuario],
+            nombre_completo: [currentUser!.nombre_completo],
             monto: [ null, [ Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/) ] ],
             periodicidad: [ null, [ Validators.required ] ],
             plazo: [ null, [ Validators.required, Validators.pattern(/^[0-9]+$/) ] ],
+            ocupacion: [ null, [ Validators.required ] ],
             destino: [ null, [ Validators.required ] ],
+            tipoIdentificacion: [ null, [ Validators.required ] ],
+            numeroIdentificacion: [ null, [ Validators.required ] ],
             estatus_solicitud: ['S'], 
             identificacion: [ null, [ Validators.required ] ],
             identificacionArchivo: [null],
+            curp: [ null, [ Validators.required ] ],
+            curpArchivo: [null],
             recibo: [ '', [ Validators.required ] ],
             reciboArchivo: [null],
             comprobante: [ '', [ Validators.required ] ],
@@ -174,10 +190,30 @@ export class SolicitudComponent  {
         this.solicitudList = this.tablesvc.search(this.searchInput, data)
     }
 
+    mostrarFormulario(id:number, solicitudContent:TemplateRef<{}>){
+        //Consulta simultanea de informacion
+        forkJoin({
+            ocupaciones: this.catalogoService.obtenerListaOcupacion(),
+            tiposIdentificacion : this.catalogoService.obtenerListaTipoIdentificacion()
+        }).subscribe({
+            next: ({ ocupaciones, tiposIdentificacion }) => { 
+                
+                this.ocupaciones = ocupaciones;
+                this.tiposIdentificacion = tiposIdentificacion;
+                
+                if(id === 0)
+                    this.mostrarNuevaSolicitud(solicitudContent);
+                else
+                    this.mostrarSolicitud(id, solicitudContent);
+            },
+            error: err => console.error(err)
+        });
+    }
+
     mostrarNuevaSolicitud(solicitudContent: TemplateRef<{}>) {
         const currentUser = this.authService.obtenerUsuarioActual();
 
-        this.cuentaService.validar(currentUser.id_usuario)
+        this.cuentaService.validar(currentUser!.id_usuario)
         .subscribe({
             next: (response) => {
                 if (response.resultado === 1){
@@ -239,9 +275,13 @@ export class SolicitudComponent  {
                     monto: response.monto,
                     periodicidad: response.periodicidad,
                     plazo: response.plazo,
+                    ocupacion: response.id_ocupacion,
                     destino: response.destino,
+                    tipoIdentificacion: response.id_tipo_identificacion,
+                    numeroIdentificacion: response.numero_identificacion,
                     estatus_solicitud: response.estatus_solicitud,
                     identificacion: response.identificacion,
+                    curp: response.curp,
                     recibo: response.recibo,
                     comprobante: response.comprobante,
                     constancia: response.constancia,
@@ -328,9 +368,13 @@ export class SolicitudComponent  {
         formData.append('monto', this.solicitudForm.get('monto')?.value);
         formData.append('periodicidad', this.solicitudForm.get('periodicidad')?.value);
         formData.append('plazo', this.solicitudForm.get('plazo')?.value);
+        formData.append('id_ocupacion', this.solicitudForm.get('ocupacion')?.value);
         formData.append('destino', this.solicitudForm.get('destino')?.value);
+        formData.append('id_tipo_identificacion', this.solicitudForm.get('tipoIdentificacion')?.value);
+        formData.append('numero_identificacion', this.solicitudForm.get('numeroIdentificacion')?.value);
         formData.append('estatus_solicitud', this.solicitudForm.get('estatus_solicitud')?.value);
         formData.append('identificacion', this.solicitudForm.get('identificacionArchivo')?.value);
+        formData.append('curp', this.solicitudForm.get('curpArchivo')?.value);
         formData.append('recibo', this.solicitudForm.get('reciboArchivo')?.value);
         formData.append('comprobante', this.solicitudForm.get('comprobanteArchivo')?.value);
         formData.append('constancia', this.solicitudForm.get('constanciaArchivo')?.value);

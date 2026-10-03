@@ -1,0 +1,28 @@
+.avatar-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.avatar-image {
+    width: 80px !important;
+    min-width: 80px;
+    max-width: 80px;
+    height: 80px !important;
+    flex: 0 0 80px;
+}
+
+.avatar-upload {
+    flex-shrink: 0;
+    //margin-left: auto;
+}
+
+@media (max-width: 767px) {
+    
+    .avatar-upload {
+        flex: 0 0 calc(100% - 100px);
+        margin-left: 100px;
+        margin-top: 15px;
+    }
+
+}

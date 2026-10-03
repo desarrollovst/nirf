@@ -6,6 +6,7 @@
   "apiCuentaUrl": "https://nirf-app.com/api_admin_nirf/cuenta",
   "apiDomicilioUrl": "https://nirf-app.com/api_admin_nirf/domicilio",
   "apiSolicitudUrl": "https://nirf-app.com/api_admin_nirf/solicitud",
+  "apiCreditoUrl": "https://localhost:7165/credito",
   "id_convenio": 1,
   "convenio": "enlink"
 }

@@ -13,6 +13,10 @@ export class CatalogoService {
         this.apiCatalogoUrl = this.configService.settings.apiCatalogoUrl;
     }
 
+    public obtenerListaPais(): Observable<any>{
+        return this.http.get<any[]>(`${this.apiCatalogoUrl}/pais`);
+    }
+
     public obtenerListaEntidad(pais: number): Observable<any>{
         return this.http.get<any[]>(`${this.apiCatalogoUrl}/entidad/${pais}`);
     }
@@ -29,7 +33,15 @@ export class CatalogoService {
         return this.http.get<any[]>(`${this.apiCatalogoUrl}/colonia/${pais}/${entidad}/${municipio}/${localidad}`);
     }
 
-    public obtenerCodigoPostal(colonia: number): Observable<any>{
-        return this.http.get<any[]>(`${this.apiCatalogoUrl}/codigoPostal/${colonia}`);
+    public obtenerCodigoPostal(codigoPostal: string): Observable<any>{
+        return this.http.get<any[]>(`${this.apiCatalogoUrl}/codigoPostal/${codigoPostal}`);
+    }
+
+    public obtenerListaOcupacion(): Observable<any>{
+        return this.http.get<any[]>(`${this.apiCatalogoUrl}/ocupacion`);
+    }
+
+    public obtenerListaTipoIdentificacion(): Observable<any>{
+        return this.http.get<any[]>(`${this.apiCatalogoUrl}/tipoIdentificacion`);
     }
 }

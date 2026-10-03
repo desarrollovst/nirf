@@ -1,0 +1,160 @@
+<div class="container">
+    <nz-card class="simulador-card" [nzBordered]="false">
+        <!-- ENCABEZADO -->
+        <div class="simulador-header text-center">
+            <h1>
+                Simulador de Crédito
+            </h1>
+            <p>
+                Calcula de forma rápida y sencilla el monto de tus pagos
+                de acuerdo con tus necesidades.
+            </p>
+        </div>
+        <nz-divider></nz-divider>
+        <div class="card-body">
+            <form [formGroup]="creditoForm">
+                <!-- MONTO -->
+                <section class="monto-section">
+                    <h3 class="titulo-seccion">
+                        ¿Cuánto necesitas?
+                    </h3>
+                    <!--<label class="form-label titulo-seccion">
+                        ¿Cuánto necesitas?
+                    </label>-->
+                    <div class="monto">
+                        {{ formatearMoneda(creditoForm.get('monto')?.value) }}
+                    </div>
+                    <nz-slider
+                        formControlName="monto"
+                        [nzMin]="montoMinimo"
+                        [nzMax]="montoMaximo"
+                        [nzStep]="incrementoMonto"
+                        [nzTooltipVisible]="'always'">
+                    </nz-slider>
+                    <div class="slider-limits">
+                        <small>
+                            {{ formatearMoneda(montoMinimo) }}
+                        </small>
+                        <small>
+                            {{ formatearMoneda(montoMaximo) }}
+                        </small>
+                    </div>
+                </section>
+                <nz-divider></nz-divider>
+                <!-- CONFIGURACIÓN DEL CRÉDITO -->
+                <section>
+                    <h3 class="titulo-seccion">
+                        Configura tu crédito
+                    </h3>
+                    <div class="row">
+                        <!-- PERIODICIDAD -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Periodicidad
+                            </label>
+                            <div class="campo">
+                                <nz-radio-group
+                                    formControlName="periodicidad">
+                                    <label
+                                        nz-radio
+                                        nzValue="quincenal">
+                                        Quincenal
+                                    </label>
+                                    <label
+                                        nz-radio
+                                        nzValue="mensual">
+                                        Mensual
+                                    </label>
+                                </nz-radio-group>
+                            </div>
+                        </div>
+                        <!-- PLAZO -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Plazo
+                            </label>
+                            <nz-input-number
+                                formControlName="plazo"
+                                [nzMin]="1"
+                                [nzMax]="60"
+                                [nzStep]="1"
+                                class="w-100">
+                            </nz-input-number>
+                            <small class="campo-ayuda">
+                                Número de pagos
+                            </small>
+                        </div>
+                        <!-- TASA -->
+                        <!--<div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Tasa de interés
+                            </label>
+                            <nz-input-number
+                                formControlName="tasa"
+                                [nzMin]="0"
+                                [nzMax]="100"
+                                [nzStep]="0.1"
+                                [nzPrecision]="2"
+                                class="w-100">
+                            </nz-input-number>
+                            <small class="campo-ayuda">
+                                Tasa anual
+                            </small>
+                        </div>-->
+                    </div>
+                </section>
+                <nz-divider></nz-divider>
+                <!-- RESULTADO -->
+                <section class="resultado-box">
+                    <div class="resultado-header">
+                        <h3>
+                            Resultado de la simulación
+                        </h3>
+                    </div>
+                    <div class="resultado-item">
+                        <span>
+                            Monto solicitado
+                        </span>
+                        <strong>
+                            {{ formatearMoneda(
+                                creditoForm.get('monto')?.value
+                            ) }}
+                        </strong>
+                    </div>
+                    <div class="resultado-item">
+                        <span>
+                            Número de pagos
+                        </span>
+                        <strong>
+                            {{ numeroPagos }}
+                        </strong>
+                    </div>
+                    <div class="resultado-item">
+                        <span>
+                            Pago {{ creditoForm.get('periodicidad')?.value }}
+                        </span>
+                        <strong class="pago">
+                            {{ formatearMoneda(pagoPeriodico) }}
+                        </strong>
+                    </div>
+                    <div class="resultado-item">
+                        <span>
+                            Intereses
+                        </span>
+                        <strong>
+                            {{ formatearMoneda(intereses) }}
+                        </strong>
+                    </div>
+                    <div class="resultado-item total">
+                        <span>
+                            Total a pagar
+                        </span>
+                        <strong>
+                            {{ formatearMoneda(totalPagar) }}
+                        </strong>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </nz-card>
+</div>

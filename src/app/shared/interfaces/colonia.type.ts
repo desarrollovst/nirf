@@ -4,4 +4,5 @@ export interface Colonia {
     id_municipio: number;
     id_localidad: number;
     nombre: string;
+    codigo_postal:string;
 }

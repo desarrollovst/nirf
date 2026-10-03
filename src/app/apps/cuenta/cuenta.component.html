@@ -7,7 +7,7 @@
         <div class="container">
             <nz-card nzTitle="Información">
                 <form nz-form [formGroup]="avatarForm">
-                    <div class="media align-items-center">
+                    <!--<div class="media align-items-center">
                         <nz-avatar [nzSize]="80" nzIcon="user" [nzSrc]="avatarUrl"></nz-avatar>
                         <div class="m-l-20 m-r-20">
                             <h5 class="m-b-5 font-size-18">Avatar</h5>
@@ -18,11 +18,37 @@
                         </div>
                         <nz-upload 
                             nzName="avatar"
+                            class="avatar-upload"
                             [nzCustomRequest]="customUpload"
                             [nzShowUploadList]="false"
                             nzAccept=".jpg,.jpeg,.png">
                             <button nz-button nzType="primary">
                                 <span>Actualizar</span>
+                            </button>
+                        </nz-upload>
+                    </div>-->
+                    <div class="media align-items-center avatar-container">
+                        <nz-avatar
+                            class="avatar-image"
+                            [nzSize]="80"
+                            nzIcon="user"
+                            [nzSrc]="avatarUrl">
+                        </nz-avatar>
+                        <div class="m-l-20 m-r-20 avatar-info">
+                            <h5 class="m-b-5 font-size-18">Avatar</h5>
+                            <p class="opacity-07 font-size-13 m-b-0">
+                                Dimensiones Recomendadas: <br>
+                                120x120 Max tamaño: 1 MB
+                            </p>
+                        </div>
+                        <nz-upload
+                            class="avatar-upload"
+                            nzName="avatar"
+                            [nzCustomRequest]="customUpload"
+                            [nzShowUploadList]="false"
+                            nzAccept=".jpg,.jpeg,.png">
+                            <button nz-button nzType="primary">
+                                Actualizar
                             </button>
                         </nz-upload>
                     </div>
@@ -129,6 +155,36 @@
                     <div class="row">
                         <div class="col-md-6">
                             <nz-form-item>
+                                <nz-form-label>País de Nacimiento</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="paisNacimiento" class="w-100" nzPlaceHolder="País de Nacimiento">
+                                        <nz-option
+                                            *ngFor="let pa of paises"
+                                            [nzValue]="pa.id"
+                                            [nzLabel]="pa.nombre">
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                        <div class="col-md-6">
+                            <nz-form-item>
+                                <nz-form-label>Nacionalidad</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="nacionalidad" class="w-100" nzPlaceHolder="Nacionalidad">
+                                        <nz-option
+                                            *ngFor="let pa of paises"
+                                            [nzValue]="pa.id"
+                                            [nzLabel]="pa.gentilicio">
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <nz-form-item>
                                 <nz-form-label>Entidad de Nacimiento</nz-form-label>
                                 <nz-form-control>
                                     <nz-select formControlName="entidadNacimiento" class="w-100" nzPlaceHolder="Entidad de Nacimiento">
@@ -171,7 +227,8 @@
                             <nz-form-item>
                                 <nz-form-label>Teléfono</nz-form-label>
                                 <nz-form-control>
-                                    <input formControlName="telefono" nz-input placeholder="Teléfono">
+                                    <input formControlName="telefono" nz-input placeholder="Teléfono" 
+                                    maxlength="10" (keypress)="permitirEnteros($event)">
                                 </nz-form-control>
                             </nz-form-item>
                         </div>
@@ -224,7 +281,8 @@
                             <nz-form-item>
                                 <nz-form-label>Código Postal</nz-form-label>
                                 <nz-form-control>
-                                    <input formControlName="codigoPostal" nz-input placeholder="Código Postal">
+                                    <input formControlName="codigoPostal" nz-input placeholder="Código Postal" 
+                                    maxlength="5" (keypress)="permitirEnteros($event)" (blur)="obtenerCodigoPostal()">
                                 </nz-form-control>
                             </nz-form-item>
                         </div>

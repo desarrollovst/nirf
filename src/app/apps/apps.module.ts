@@ -33,9 +33,14 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzSliderModule } from 'ng-zorro-antd/slider';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 
 import { CuentaComponent } from './cuenta/cuenta.component';
 import { SolicitudComponent } from './solicitud/solicitud.component';
+import { SimuladorComponent } from './simulador/simulador.component';
+import { CreditoComponent } from './credito/credito.component';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 const antdModule= [
     NzButtonModule,
@@ -62,7 +67,11 @@ const antdModule= [
     NzDatePickerModule,
     NzCheckboxModule,
     NzMessageModule,
-    NzSpinModule
+    NzSpinModule,
+    NzSliderModule,
+    NzInputNumberModule,
+    NzDividerModule,
+    NzUploadModule
 ]
 
 @NgModule({
@@ -75,7 +84,9 @@ const antdModule= [
     ],
     declarations: [
         CuentaComponent,
-        SolicitudComponent
+        SolicitudComponent,
+        SimuladorComponent,
+        CreditoComponent
     ],
     providers: [
         ThemeConstantService,

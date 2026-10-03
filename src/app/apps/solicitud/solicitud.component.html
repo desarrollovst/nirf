@@ -14,7 +14,7 @@
         </div>
         <div class="col-md-6">
             <div class="text-md-right m-v-10">
-                <button nz-button nzType="primary" (click)="mostrarNuevaSolicitud(solicitudContent)">
+                <button nz-button nzType="primary" (click)="mostrarFormulario(0, solicitudContent)">
                     <i nz-icon nzType="plus"></i>
                     <span>Nueva Solicitud</span>
                 </button>  
@@ -25,7 +25,7 @@
                         </div>
                         <form nz-form [formGroup]="solicitudForm" nzLayout="vertical">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <nz-form-item>
                                         <nz-form-label>Monto</nz-form-label>
                                         <nz-form-control >
@@ -35,7 +35,7 @@
                                         </nz-form-control>
                                     </nz-form-item>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <nz-form-item>
                                         <nz-form-label>Periodicidad</nz-form-label>
                                         <nz-form-control >
@@ -46,14 +46,28 @@
                                         </nz-form-control>
                                     </nz-form-item>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <nz-form-item>
                                         <nz-form-label>Plazo</nz-form-label>
                                         <nz-form-control >
                                             <input formControlName="plazo" type="text" nz-input placeholder="Plazo"
                                             (keypress)="soloEntero($event)" (paste)="validarPegadoEntero($event)">
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <nz-form-item>
+                                        <nz-form-label>Actividad u Ocupación</nz-form-label>
+                                        <nz-form-control >
+                                            <nz-select formControlName="ocupacion" class="w-100" nzPlaceHolder="Ocupación">
+                                                <nz-option
+                                                    *ngFor="let o of ocupaciones"
+                                                    [nzValue]="o.id"
+                                                    [nzLabel]="o.nombre">
+                                                </nz-option>
+                                            </nz-select>
                                         </nz-form-control>
                                     </nz-form-item>
                                 </div>
@@ -68,12 +82,45 @@
                                         </nz-form-control>
                                     </nz-form-item>
                                 </div>
+                                <div class="col-md-6">
+                                    <nz-form-item>
+                                        <nz-form-label>Tipo Identificación</nz-form-label>
+                                        <nz-form-control>
+                                            <nz-select formControlName="tipoIdentificacion" class="w-100" nzPlaceHolder="Tipo Identificación">
+                                                <nz-option
+                                                    *ngFor="let t of tiposIdentificacion"
+                                                    [nzValue]="t.id"
+                                                    [nzLabel]="t.nombre">
+                                                </nz-option>
+                                            </nz-select>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-6">
+                                    <nz-form-item>
+                                        <nz-form-label>Número Identificación</nz-form-label>
+                                        <nz-form-control >
+                                            <input formControlName="numeroIdentificacion" type="text" nz-input placeholder="Número Identificación">
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
                                 <div class="col-md-12">
                                     <nz-form-item>
                                         <nz-form-label>Identificación Oficial</nz-form-label>
                                         <nz-form-control >
                                             <input nz-input formControlName="identificacion" readonly>
                                             <nz-upload [nzBeforeUpload]="cargaIdentificacion" [nzShowUploadList]="false">
+                                                <button nz-button type="button">Seleccionar archivo</button>
+                                            </nz-upload>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="col-md-12">
+                                    <nz-form-item>
+                                        <nz-form-label>CURP</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="curp" readonly>
+                                            <nz-upload [nzBeforeUpload]="cargaCURP" [nzShowUploadList]="false">
                                                 <button nz-button type="button">Seleccionar archivo</button>
                                             </nz-upload>
                                         </nz-form-control>
@@ -133,7 +180,7 @@
 </div>
 <div class="container-fluid">
     <nz-card *ngIf="view == 'listView'">
-        <nz-table #listViewTable [nzLoading]="loading" [nzData]="solicitudList" [nzNoResult]="loading ? null : 'No hay datos'">
+        <nz-table #listViewTable [nzLoading]="loading" [nzData]="solicitudList" [nzNoResult]="loading ? undefined : 'No hay datos'">
             <thead>
                 <tr>
                     <th>Fecha Solicitud</th>
@@ -166,7 +213,7 @@
                             <nz-dropdown-menu #solicitudListSetting2="nzDropdownMenu">
                                 <ul nz-menu nzSelectable>
                                     <li nz-menu-item *ngIf="item.estatus_solicitud == 'Solicitado'">
-                                        <a (click)="mostrarSolicitud(item.id_solicitud, solicitudContent)">
+                                        <a (click)="mostrarFormulario(item.id_solicitud, solicitudContent)">
                                             <i nz-icon nzType="edit" theme="outline"></i>
                                             <span class="m-l-10">Editar</span>
                                         </a>

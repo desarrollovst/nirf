@@ -10,6 +10,7 @@ import { AutenticacionService } from '../../shared/services/autenticacion.servic
 import { CatalogoService } from '../../shared/services/catalogo.service';
 import { UsuarioService } from 'src/app/shared/services/usuario.service';
 import { CuentaService } from '../../shared/services/cuenta.service';
+import { Pais } from 'src/app/shared/interfaces/pais.type';
 import { Entidad } from 'src/app/shared/interfaces/entidad.type';
 import { Municipio } from 'src/app/shared/interfaces/municipio.type';
 import { Localidad } from 'src/app/shared/interfaces/localidad.type';
@@ -18,21 +19,25 @@ import { DateUtils } from '../../shared/utils/date.utils';
 import { CuentaUtils } from 'src/app/shared/utils/cuenta.utils';
 
 @Component({
-    templateUrl: './cuenta.component.html'
+    templateUrl: './cuenta.component.html',
+    styleUrls: ['./cuenta.component.scss']
 })
 
 export class CuentaComponent {
-    avatarForm: UntypedFormGroup; 
-    usuarioForm: UntypedFormGroup;
-    passForm: UntypedFormGroup;
-    datosGralsForm: UntypedFormGroup;
-    domForm: UntypedFormGroup;
+    avatarForm!: UntypedFormGroup; 
+    usuarioForm!: UntypedFormGroup;
+    passForm!: UntypedFormGroup;
+    datosGralsForm!: UntypedFormGroup;
+    domForm!: UntypedFormGroup;
     loading: boolean = false;
     avatarUrl: string = "./assets/images/avatars/user.png";
+    paises: Pais[] = [];
     entidades: Entidad[] = [];
     municipios: Municipio[] = [];
     localidades: Localidad[] = [];
     colonias: Colonia[] = [];
+    listaColonias: Colonia[] = [];
+    codigoPostalActual: string = "";
 
     public actualizarPassword(){
         this.loading = true;
@@ -41,7 +46,7 @@ export class CuentaComponent {
 
         const formData = new FormData();
 
-        formData.append('id_usuario', currentUser.id_usuario.toString());
+        formData.append('id_usuario', currentUser!.id_usuario.toString());
         formData.append('password_anterior', this.passForm.get('oldPassword')?.value ?? 0);
         formData.append('password', this.passForm.get('newPassword')?.value ?? 0);
         formData.append('operacion', "1");
@@ -70,13 +75,13 @@ export class CuentaComponent {
 
         //Consulta simultanea de informacion
         forkJoin({
-            responseUsuario: this.usuarioService.obtenerAvatar(currentUser.id_usuario),
-            responseDatos: this.cuentaService.obtenerDatos(currentUser.id_usuario),
-            responseDom: this.cuentaService.obtenerDomicilio(currentUser.id_usuario)
+            responseUsuario: this.usuarioService.obtenerAvatar(currentUser!.id_usuario),
+            responseDatos: this.cuentaService.obtenerDatos(currentUser!.id_usuario),
+            responseDom: this.cuentaService.obtenerDomicilio(currentUser!.id_usuario)
         }).subscribe({
             next: ({ responseUsuario, responseDatos, responseDom }) => {
                 this.usuarioForm.patchValue({
-                    email: currentUser.email
+                    email: currentUser!.email
                 });    
 
                 if(responseUsuario){
@@ -98,6 +103,8 @@ export class CuentaComponent {
                         segundoNombre: responseDatos.segundo_nombre ?? '',
                         apellidoPaterno: responseDatos.apellido_paterno,
                         apellidoMaterno: responseDatos.apellido_materno ?? '',
+                        paisNacimiento: responseDatos.id_pais_nacimiento,
+                        nacionalidad: responseDatos.id_nacionalidad,
                         entidadNacimiento: responseDatos.id_entidad_nacimiento,
                         fechaNacimiento: DateUtils.parseDateOnly(responseDatos.fecha_nacimiento),
                         rfc: responseDatos.rfc,
@@ -129,14 +136,16 @@ export class CuentaComponent {
                             calle: responseDom.calle,
                             numExt: responseDom.numero_exterior,
                             numInt: responseDom.numero_interior,
-                            codigoPostal: responseDom.codigo_postal,
                             pais: 1,
                             entidad: responseDom.id_entidad,
                             municipio: responseDom.id_municipio,
                             localidad: responseDom.id_localidad,
                             colonia: responseDom.id_colonia,
+                            codigoPostal: responseDom.codigo_postal,
                             operacion: operacionDom    
                         });
+
+                        this.codigoPostalActual = responseDom.codigo_postal;
                     },
                         error: err => console.error(err)
                     }); 
@@ -173,7 +182,7 @@ export class CuentaComponent {
         const formData = new FormData();
 
         formData.append('id_avatar', this.avatarForm.get('id_avatar')?.value);
-        formData.append('id_usuario', currentUser.id_usuario.toString());
+        formData.append('id_usuario', currentUser!.id_usuario.toString());
         formData.append('file_avatar', item.postFile as File);
         formData.append('operacion', this.avatarForm.get('operacion')?.value);
 
@@ -210,7 +219,7 @@ export class CuentaComponent {
         const formData = new FormData();
 
         formData.append('id_cuenta', this.datosGralsForm.get('id_cuenta')?.value ?? 0);
-        formData.append('id_usuario', currentUser.id_usuario.toString());
+        formData.append('id_usuario', currentUser!.id_usuario.toString());
         const primer_nombre = this.datosGralsForm.get('primerNombre')?.value;
         formData.append('primer_nombre', this.datosGralsForm.get('primerNombre')?.value);
         const segundo_nombre = this.datosGralsForm.get('segundoNombre')?.value;
@@ -223,6 +232,16 @@ export class CuentaComponent {
         if (apellido_materno) {
             formData.append('apellido_materno', apellido_materno);
         }
+        formData.append('id_pais_nacimiento', this.datosGralsForm.get('paisNacimiento')?.value);
+        const pais_nacimiento = this.paises.find(
+            pa => pa.id === this.datosGralsForm.get('paisNacimiento')?.value
+        );
+        formData.append('pais_nacimiento', pais_nacimiento.codigo.toString());
+        formData.append('id_nacionalidad', this.datosGralsForm.get('nacionalidad')?.value);
+        const nacionalidad = this.paises.find(
+            pa => pa.id === this.datosGralsForm.get('nacionalidad')?.value
+        );
+        formData.append('nacionalidad', nacionalidad.codigo.toString());
         formData.append('id_entidad_nacimiento', this.datosGralsForm.get('entidadNacimiento')?.value);
         formData.append('fecha_nacimiento', formatDate(this.datosGralsForm.get('fechaNacimiento')?.value,'yyyy-MM-dd','en-US'));
         formData.append('rfc', this.datosGralsForm.get('rfc')?.value);
@@ -230,8 +249,8 @@ export class CuentaComponent {
         formData.append('telefono', this.datosGralsForm.get('telefono')?.value);
         formData.append('operacion', this.datosGralsForm.get('operacion')?.value);
 
-        currentUser.nombre = this.datosGralsForm.get('primerNombre')?.value;
-        currentUser.nombre_completo = CuentaUtils.formatearNombre(primer_nombre, segundo_nombre, apellido_paterno, apellido_materno, 2);
+        currentUser!.nombre = this.datosGralsForm.get('primerNombre')?.value;
+        currentUser!.nombre_completo = CuentaUtils.formatearNombre(primer_nombre, segundo_nombre, apellido_paterno, apellido_materno, 2);
 
         this.cuentaService.guardarDatos(formData)
             .subscribe({
@@ -267,7 +286,7 @@ export class CuentaComponent {
         const formData = new FormData();
 
         formData.append('id_domicilio', this.domForm.get('id_domicilio')?.value ?? 0);
-        formData.append('id_usuario', currentUser.id_usuario.toString());
+        formData.append('id_usuario', currentUser!.id_usuario.toString());
         formData.append('calle', this.domForm.get('calle')?.value);
         formData.append('numero_exterior', this.domForm.get('numExt')?.value);
         const numInt = this.domForm.get('numInt')?.value;
@@ -350,6 +369,8 @@ export class CuentaComponent {
             segundoNombre: [ null, [ Validators.nullValidator ] ],
             apellidoPaterno: [ null, [ Validators.required ] ],
             apellidoMaterno: [ null, [ Validators.nullValidator ] ],
+            paisNacimiento: [ null, [ Validators.nullValidator ] ],
+            nacionalidad: [ null, [ Validators.nullValidator ] ],
             entidadNacimiento: [ null, [ Validators.required ] ],
             fechaNacimiento: [ null, [ Validators.required ] ],
             rfc: [ null, [ Validators.required ] ],
@@ -419,14 +440,76 @@ export class CuentaComponent {
             this.obtenerColonias(id);
         });
 
-        this.catalogoService.obtenerListaEntidad(1)
-        .subscribe({
-            next: data => {
-                this.entidades = data;
+        this.domForm.get('colonia')?.valueChanges.subscribe(id => {
+            if (!id)
+                return;
+
+            const colonia = this.colonias.find(
+                c => c.id === id
+            );
+
+            if (colonia) {
+                this.domForm.patchValue({
+                    codigoPostal: colonia.codigo_postal
+                });
+
+                this.codigoPostalActual = colonia.codigo_postal;
+            }
+        });
+
+        //Consulta simultanea de informacion
+        forkJoin({
+            paises: this.catalogoService.obtenerListaPais(),
+            entidades: this.catalogoService.obtenerListaEntidad(1)
+        }).subscribe({
+            next: ({ paises, entidades }) => { 
+                this.paises = paises;
+                this.entidades = entidades;
                 this.cargarFormularios();
             },
             error: err => console.error(err)
         });
+    }
+
+    public obtenerCodigoPostal():void{
+        var codigoPostal = this.domForm.get('codigoPostal')?.value;
+
+        if(codigoPostal.length === 5 && this.codigoPostalActual !== codigoPostal){
+            this.loading = true;
+            this.codigoPostalActual = codigoPostal;
+
+            this.catalogoService.obtenerCodigoPostal(codigoPostal)
+            .subscribe({
+                next: data => {
+                    if(data){
+                        this.domForm.patchValue({
+                            pais: 1,
+                            entidad: data.id_entidad,
+                            municipio: data.id_municipio,
+                            localidad: data.id_localidad
+                        });
+                    }   
+                    else{
+                        this.municipios = [];
+                        this.localidades = [];  
+                        this.colonias = [];        
+
+                        this.domForm.patchValue({
+                            pais: 1,
+                            entidad: 0,
+                            municipio: 0,
+                            localidad: 0,
+                            colonia: 0,
+                        });
+                    }
+                    this.loading = false;
+                },
+                error: err => { 
+                    console.error(err)
+                    this.loading = false;
+                }
+            });
+        }
     }
 
     public obtenerColonias(id_localidad: number):void{
@@ -437,7 +520,25 @@ export class CuentaComponent {
         this.catalogoService.obtenerListaColonia(id_pais, id_entidad, id_municipio, id_localidad)
         .subscribe({
             next: data => {
-                this.colonias = data;
+                this.listaColonias = data;
+
+                var codigoPostal = this.domForm.get('codigoPostal')?.value;
+
+                if(codigoPostal.length === 5){
+                    const coloniasFiltradas = this.listaColonias.filter(
+                        colonia => colonia.codigo_postal === codigoPostal
+                    );
+                    this.colonias = coloniasFiltradas;
+
+                    if (coloniasFiltradas.length === 1) {
+                        this.domForm.patchValue({
+                            colonia: coloniasFiltradas[0].id
+                        });
+                    }
+                }
+                else{
+                    this.colonias = this.listaColonias;
+                }
             },
             error: err => console.error(err)
         });
@@ -468,7 +569,7 @@ export class CuentaComponent {
         });
     }
 
-    showConfirmDatos(): void {
+    mostrarConfirmacionDatos(): void {
         this.modalService.confirm({
             nzTitle  : '<i>¿Desea confirmar la modificación de los datos personales?</i>',
             nzOnOk   : () => { 
@@ -477,7 +578,7 @@ export class CuentaComponent {
         });
     }
 
-    showConfirmDir(): void {
+    mostrarConfirmacionDir(): void {
         this.modalService.confirm({
             nzTitle  : '<i>¿Desea confirmar la modificación de su dirección?</i>',
             nzOnOk   : () => { 
@@ -486,7 +587,7 @@ export class CuentaComponent {
         });
     }
 
-    showConfirmPwd(): void {
+    mostrarConfirmacionPwd(): void {
         this.modalService.confirm({
             nzTitle  : '<i>¿Desea confirmar la modificación de la contraseña?</i>',
             nzOnOk   : () => {
@@ -495,27 +596,28 @@ export class CuentaComponent {
         });
     }
 
+    permitirEnteros(event: KeyboardEvent): void {
+        // Permitir únicamente dígitos
+        if (!/^\d$/.test(event.key)) {
+            event.preventDefault();
+        }
+    }
+
     submitFormDatos(): void {
         for (const i in this.datosGralsForm.controls) {
             this.datosGralsForm.controls[ i ].markAsDirty();
             this.datosGralsForm.controls[ i ].updateValueAndValidity();
         }
-        this.showConfirmDatos();
+        this.mostrarConfirmacionDatos();
     }
 
     submitFormDir(): void {
-        /*for (const i in this.dirForm.controls) {
-            this.dirForm.controls[ i ].markAsDirty();
-            this.dirForm.controls[ i ].updateValueAndValidity();
-        }
-        this.showConfirmDir();*/
-
         this.domForm.markAllAsTouched();
 
         if (this.domForm.invalid) {
             return;
         }
-        this.showConfirmDir();
+        this.mostrarConfirmacionDir();
     }
 
     submitFormPwd(): void {
@@ -523,7 +625,7 @@ export class CuentaComponent {
             this.passForm.controls[ i ].markAsDirty();
             this.passForm.controls[ i ].updateValueAndValidity();
         }
-        this.showConfirmPwd();
+        this.mostrarConfirmacionPwd();
     }
 
     private getBase64(img: Blob, callback: (img: {}) => void): void {
